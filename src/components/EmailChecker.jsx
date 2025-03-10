@@ -24,7 +24,7 @@ const EmailChecker = () => {
     const newEntry = { email, phone, message: verificationMessage, date: new Date().toISOString() };
 
     try {
-      const response = await fetch("https://api-garoua.onrender.com//verify", {
+      const response = await fetch("https://api-garoua.onrender.com/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const EmailChecker = () => {
       <TextField
         label="Numéro WhatsApp"
         variant="outlined"
-        type="tel"
+        type="number"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         fullWidth
