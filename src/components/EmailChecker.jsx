@@ -11,47 +11,40 @@ const EmailChecker = () => {
   const [message, setMessage] = useState("");  // Message pour la vérification de la session
 
   const handleCheckEmail = async () => {
-    if (!Array.isArray(emailList)) {
-      setResponseMessage("Erreur : La liste des emails est mal formatée.");
-      return;
-    }
     if (!email || !phone) {
       setResponseMessage("L'email et le téléphone sont requis.");
       return;
     }
-
-    // Vérification si l'email est dans la liste
+  
     const verificationMessage = emailList.includes(email.toLowerCase())
       ? "Vous êtes de cette session ✅"
       : "Vous n'êtes pas de cette session ❌";
-
-    setMessage(verificationMessage);  // Mettre à jour le message de vérification
-
-    // Préparer l'objet à envoyer au backend
+  
+    setMessage(verificationMessage);
+  
     const newEntry = { email, phone, message: verificationMessage, date: new Date().toISOString() };
-
+  
     try {
-      // Envoi des données au backend
-      const response = await fetch("https://api-garoua.onrender.com/verify", {
+      const response = await fetch("http://localhost:5000/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newEntry),
       });
-
+  
       const result = await response.json();
       if (response.ok) {
-        setResponseMessage(result.message);  // Message renvoyé par le backend
+        setResponseMessage("Données enregistrées avec succès !");
       } else {
-        setResponseMessage(result.message || "Erreur lors de la vérification.");
+        setResponseMessage(result.error || "Erreur lors de l'enregistrement.");
       }
     } catch (error) {
       setResponseMessage("Erreur lors de l'envoi des données.");
       console.log(error);
     }
   };
-
+  
   const isButtonDisabled = !(email && phone); // Désactiver le bouton si l'email ou le téléphone est vide
 
   return (
