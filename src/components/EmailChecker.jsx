@@ -1,104 +1,89 @@
-import React, { useState } from "react";
-import { TextField, Button, Typography, Container, Alert } from "@mui/material";
+import { useState } from "react";
+import { Container, TextField, Button, Typography, Alert } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
-import emailList from "./emails.json"; // Liste des emails
 import ErrorIcon from "@mui/icons-material/Error";
+import emailList from "./emails.json"; // 📌 Liste locale des emails autorisés
+
+const API_URL = "https://67cef6a9823da0212a80e5e6.mockapi.io/v1/users";
 
 const EmailChecker = () => {
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [responseMessage, setResponseMessage] = useState("");  // Message pour la réponse du backend
-  const [message, setMessage] = useState("");  // Message pour la vérification de la session
+  const [telephone, setTelephone] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+  const [messageType, setMessageType] = useState("info");
 
   const handleCheckEmail = async () => {
-    if (!email || !phone) {
-      setResponseMessage("L'email et le téléphone sont requis.");
+    if (!email || !telephone) {
+      setResponseMessage("L'email et le numéro sont requis.");
+      setMessageType("error");
       return;
     }
-  
-    const verificationMessage = emailList.includes(email.toLowerCase())
+
+    // 📌 Vérifier si l'email existe dans `emails.json`
+    const emailExists = emailList.includes(email.toLowerCase());
+    const verificationMessage = emailExists
       ? "Vous êtes de cette session ✅"
       : "Vous n'êtes pas de cette session ❌";
-  
-    setMessage(verificationMessage);
-  
-    const newEntry = { email, phone, message: verificationMessage, date: new Date().toISOString() };
-  
+
+    setResponseMessage(verificationMessage);
+    setMessageType(emailExists ? "success" : "error");
+
+    // 📌 Enregistrer les données dans MockAPI
+    const newEntry = {
+      email,
+      telephone,
+      message: verificationMessage,
+      date: Math.floor(Date.now() / 1000), // Timestamp en secondes
+    };
+
     try {
-      const response = await fetch("https://garoua.vercel.app/users", {
+      await fetch(API_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newEntry),
       });
-  
-      const result = await response.json();
-      if (response.ok) {
-        setResponseMessage("Données enregistrées avec succès !");
-      } else {
-        setResponseMessage(result.error || "Erreur lors de l'enregistrement.");
-      }
     } catch (error) {
-      setResponseMessage("Erreur lors de l'envoi des données.");
-      console.log(error);
+      console.error("Erreur lors de l'enregistrement:", error);
     }
+
+    // 📌 Réinitialiser les champs après enregistrement
+    setEmail("");
+    setTelephone("");
   };
-  
-  const isButtonDisabled = !(email && phone); // Désactiver le bouton si l'email ou le téléphone est vide
 
   return (
     <Container style={{ textAlign: "center", marginTop: "50px" }}>
-      <Typography variant="h5" gutterBottom>Vérification d'email</Typography>
+      <Typography variant="h5" gutterBottom>Vérification de Session</Typography>
       <TextField
         label="Email"
         variant="outlined"
-        type="email"
+        fullWidth
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        fullWidth
         style={{ marginBottom: "20px" }}
         required
       />
       <TextField
         label="Numéro WhatsApp"
         variant="outlined"
-        type="number"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
         fullWidth
+        type="number"
+        value={telephone}
+        onChange={(e) => setTelephone(e.target.value)}
         style={{ marginBottom: "20px" }}
         required
       />
-      <Button 
-        onClick={handleCheckEmail} 
-        variant="contained" 
-        color="primary" 
-        style={{ marginBottom: "20px" }}
-        disabled={isButtonDisabled}
-      >
+      <Button onClick={handleCheckEmail} variant="contained" color="primary">
         Vérifier
       </Button>
-
-      {/* Affichage du message de la session */}
-      {message && (
-        <Alert
-          icon={message.includes("❌") ? <ErrorIcon fontSize="inherit" /> : <CheckIcon fontSize="inherit" />}
-          severity={message.includes("❌") ? "error" : "success"}
-        >
-          {message}
+      <br/>   <br/>
+      
+      {responseMessage && (
+        <Alert icon={messageType === "error" ? <ErrorIcon /> : <CheckIcon />} severity={messageType}>
+          {responseMessage}
         </Alert>
       )}
 
-      {/* Affichage de la réponse du backend */}
-      {/* {responseMessage && (
-        <Alert
-          icon={responseMessage.includes("❌") ? <ErrorIcon fontSize="inherit" /> : <CheckIcon fontSize="inherit" />}
-          severity={responseMessage.includes("❌") ? "error" : "success"}
-        >
-          {responseMessage}
-        </Alert>
-      )} */}
     </Container>
   );
 };
