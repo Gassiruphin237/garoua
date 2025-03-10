@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import emailList from "./emails.json"; // Liste des emails
 import { TextField, Button, Typography, Container, Alert } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -11,17 +10,12 @@ const EmailChecker = () => {
   const [responseMessage, setResponseMessage] = useState("");
 
   const handleCheckEmail = async () => {
-    if (!Array.isArray(emailList)) {
-      setResponseMessage("Erreur : La liste des emails est mal formatée.");
+    if (!email || !phone) {
+      setResponseMessage("L'email et le numéro de téléphone sont requis.");
       return;
     }
 
-    const verificationMessage = emailList.includes(email.toLowerCase())
-      ? "Vous êtes de cette session ✅"
-      : "Vous n'êtes pas de cette session ❌";
-    setMessage(verificationMessage);
-
-    const newEntry = { email, phone, message: verificationMessage, date: new Date().toISOString() };
+    const newEntry = { email, phone, message, date: new Date().toISOString() };
 
     try {
       const response = await fetch("https://api-garoua.onrender.com/verify", {
@@ -34,6 +28,13 @@ const EmailChecker = () => {
 
       const result = await response.json();
       setResponseMessage(result.message || result.error);
+
+      if (result.message.includes("✅")) {
+        setMessage("Vous êtes de cette session ✅");
+      } else {
+        setMessage("Vous n'êtes pas de cette session ❌");
+      }
+
     } catch (error) {
       setResponseMessage("Erreur lors de l'envoi des données.");
       console.log(error);
@@ -46,8 +47,8 @@ const EmailChecker = () => {
     <Container style={{ textAlign: "center", marginTop: "50px" }}>
       <Typography variant="h5" gutterBottom>Vérification d'email</Typography>
       <br />
-      <span>Entrez votre adresse email utilisé lors de l'inscription au TCF Canada </span>
-        <br />    <br />
+      <span>Entrez votre adresse email utilisée lors de l'inscription au TCF Canada</span>
+      <br /><br />
       <TextField
         label="Email"
         variant="outlined"
@@ -80,12 +81,12 @@ const EmailChecker = () => {
         Vérifier
       </Button>
 
-      {message && (
+      {responseMessage && (
         <Alert
-          icon={message.includes("❌") ? <ErrorIcon fontSize="inherit" /> : <CheckIcon fontSize="inherit" />}
-          severity={message.includes("❌") ? "error" : "success"}
+          icon={responseMessage.includes("❌") ? <ErrorIcon fontSize="inherit" /> : <CheckIcon fontSize="inherit" />}
+          severity={responseMessage.includes("❌") ? "error" : "success"}
         >
-          {message}
+          {responseMessage}
         </Alert>
       )}
     </Container>
