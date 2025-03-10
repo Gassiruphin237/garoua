@@ -25,7 +25,7 @@ const EmailChecker = () => {
     const newEntry = { email, phone, message: verificationMessage, date: new Date().toISOString() };
   
     try {
-      const response = await fetch("http://localhost:5000/users", {
+      const response = await fetch("https://garoua.vercel.app/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
