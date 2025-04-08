@@ -35,7 +35,7 @@ const Tontine = () => {
         setTimeout(() => {
             generatePairs();
             setIsLoading(false);
-        }, 10000);
+        }, 5000);
     };
 
     const groupPairs = () => {
