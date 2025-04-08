@@ -1,0 +1,29 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* align-items: center; */
+}
+.pair-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+}
+
+.pair {
+    padding: 10px;
+    width: 150px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* Media Query pour mobile et tablette (moins de 1024px) */
+@media screen and (max-width: 1024px) {
+    .d-flex {
+        flex-direction: column; /* Change la direction du flex en colonne */
+    }
+    .pair {
+        width: 100%; /* Les éléments prennent 100% de la largeur sur mobile/tablette */
+    }
+}
+

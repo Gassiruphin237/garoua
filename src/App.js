@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import EmailChecker from "./components/EmailChecker";
 import UserTable from "./components/UserTable";
 import { Container, Button } from "@mui/material";
+import Count from "./components/Count";
+import Tontine from "./components/Tontine";
 
 function App() {
   return (
@@ -16,7 +18,8 @@ function App() {
 
         <Routes>
           <Route path="/" element={<EmailChecker />} />
-          <Route path="/users" element={<UserTable />} />
+          <Route path="/count" element={<Count />} />
+          <Route path="/tontine" element={<Tontine/>} />
         </Routes>
       </Container>
     </Router>
