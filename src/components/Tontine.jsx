@@ -60,7 +60,7 @@ const Tontine = () => {
                 {/* Bloc 1 : Instructions */}
                 <div className="col-md-4 mb-4">
                     <div className="p-4 shadow-sm rounded">
-                        <h6> Amical des Ancient Servants Sainte Monique Makèpe</h6><br/>
+                        <h6> Amical des Anciens Servants Sainte Monique Makèpe</h6><br/>
                         <strong><h3>Instruction</h3></strong>
                         <p>Cliquez sur le bouton ci-dessous pour générer les positions de reception la Tontine.</p>
                         <button onClick={handleGenerate} className="btn btn-primary btn-lg w-100" disabled={isLoading}>
