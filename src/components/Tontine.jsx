@@ -3,14 +3,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Tontine.css';
 
 const Tontine = () => {
-    const [members] = useState([
-        'Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Hannah',
-        'Ivy', 'Jack', 'Kevin', 'Laura', 'Mason', 'Nina', 'Oliver', 'Paul',
-        'Quincy', 'Rita', 'Sam', 'Tina'
-    ]);
-
+    const [members, setMembers] = useState([]);
+    const [newMember, setNewMember] = useState('');
     const [pairs, setPairs] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const handleAddMember = () => {
+        const trimmed = newMember.trim();
+        if (trimmed && !members.includes(trimmed)) {
+            setMembers([...members, trimmed]);
+            setNewMember('');
+        }
+    };
 
     const shuffleArray = (array) => {
         const shuffled = [...array];
@@ -25,7 +29,11 @@ const Tontine = () => {
         const shuffledMembers = shuffleArray(members);
         const newPairs = [];
         for (let i = 0; i < shuffledMembers.length; i += 2) {
-            newPairs.push([shuffledMembers[i], shuffledMembers[i + 1]]);
+            if (shuffledMembers[i + 1]) {
+                newPairs.push([shuffledMembers[i], shuffledMembers[i + 1]]);
+            } else {
+                newPairs.push([shuffledMembers[i], '—']);
+            }
         }
         setPairs(newPairs);
     };
@@ -35,7 +43,7 @@ const Tontine = () => {
         setTimeout(() => {
             generatePairs();
             setIsLoading(false);
-        }, 5000);
+        }, 2000);
     };
 
     const groupPairs = () => {
@@ -55,15 +63,40 @@ const Tontine = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container py-4">
             <div className="row">
-                {/* Bloc 1 : Instructions */}
+                {/* Bloc 1 : Formulaire & Instructions */}
                 <div className="col-md-4 mb-4">
                     <div className="p-4 shadow-sm rounded">
-                        <h6> Amical des Anciens Servants Sainte Monique Makèpe</h6><br/>
-                        <strong><h3>Instruction</h3></strong>
-                        <p>Cliquez sur le bouton ci-dessous pour générer les positions de reception la Tontine.</p>
-                        <button onClick={handleGenerate} className="btn btn-primary btn-lg w-100" disabled={isLoading}>
+                        <h6>Amical des Anciens Servants Sainte Monique Makèpe</h6>
+                        <h4 className="fw-bold mt-3">Ajouter un membre</h4>
+                        <div className="d-flex mb-3">
+                            <input
+                                type="text"
+                                className="form-control me-2"
+                                placeholder="Nom du membre"
+                                value={newMember}
+                                onChange={(e) => setNewMember(e.target.value)}
+                            /> &nbsp;
+                            <button className="btn btn-success" onClick={handleAddMember}>Ajouter</button>
+                        </div>
+
+                        {members.length > 0 && (
+                            <>
+                                <h5 className="fw-bold mt-4">Liste des membres</h5>
+                                <ul className="list-group mb-3">
+                                    {members.map((name, idx) => (
+                                        <li key={idx} className="list-group-item">{name}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+
+                        <button
+                            onClick={handleGenerate}
+                            className="btn btn-primary w-100"
+                            disabled={isLoading || members.length < 2}
+                        >
                             {isLoading ? 'Chargement...' : 'Générer les positions'}
                         </button>
                     </div>
@@ -74,9 +107,7 @@ const Tontine = () => {
                     <div className="pair-container">
                         {isLoading ? (
                             <div className="text-center my-5">
-                                <div className="spinner-border text-primary" role="status">
-                                    <span className="visually-hidden">Chargement...</span>
-                                </div>
+                                <div className="spinner-border text-primary" role="status" />
                                 <p className="mt-2">Génération en cours...</p>
                             </div>
                         ) : pairs.length > 0 ? (
